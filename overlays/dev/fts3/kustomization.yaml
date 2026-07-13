@@ -6,6 +6,7 @@ resources:
   - deployment.yaml
   - fts3rest.yaml
   - fts3mon.yaml
+  - fts3activemq.yaml
   - service.yaml
   - cronjobs.yaml
   - grid-certificates-job.yaml
@@ -39,13 +40,11 @@ secretGenerator:
       disableNameSuffixHash: true
     files:
     - docker-entrypoint.sh=etc/docker-entrypoint.sh
-#  - name: fts3-activemq-secrets
-#    options:
-#      disableNameSuffixHash: true
-#    files:
-#      - broker_password=etc/temp_secrets/activemq/broker_password
-#      - broker_username=etc/temp_secrets/activemq/broker_username
-#      - broker_dns_alias=etc/temp_secrets/activemq/broker_dns_alias
+  - name: fts3-activemq-secrets
+    options:
+      disableNameSuffixHash: true
+    envs:
+      - etc/secrets/activemq-secrets
 
 configMapGenerator:
   - name: supervisord-conf
