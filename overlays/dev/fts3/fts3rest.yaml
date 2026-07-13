@@ -38,7 +38,7 @@ spec:
       restartPolicy: Always
       initContainers:
       - name: prep-log-pvc
-        image: ghcr.io/fnal-fife/fts3-rest:3.14.2
+        image: ghcr.io/fnal-fife/fts3-rest:3.14.2-s6
         imagePullPolicy: Always
         command: ["/bin/sh", "-c", "cp -r /var/log/* /out/"]
         volumeMounts:
@@ -67,7 +67,7 @@ spec:
             - name: fts3-logs
               mountPath: /var/log
         - name: fts3-rest
-          image: ghcr.io/fnal-fife/fts3-rest:3.14.2
+          image: ghcr.io/fnal-fife/fts3-rest:3.14.2-s6
           imagePullPolicy: Always
           resources:
             limits:
@@ -112,12 +112,6 @@ spec:
             - name: WEB_INTERFACE
               value: usdf-fts3-dev.slac.stanford.edu
           readinessProbe:
-#            exec:
-#              command:
-#              - /bin/sh
-#              - -i
-#              - -c
-#              - mysql --host=${MARIADB_CONNECTION_STRING} -P 3306 --user=$MARIADB_USER --password="$MARIADB_PASSWORD" --database=fts3db -e 'SELECT 1'
             httpGet:
               path: /whoami
               port: 8446
