@@ -23,6 +23,17 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: fts3-messages-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: sdf-group-rubin
 spec:
   storageClassName: sdf-group-rubin
