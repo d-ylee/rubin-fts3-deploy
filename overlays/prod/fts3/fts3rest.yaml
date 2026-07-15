@@ -110,7 +110,7 @@ spec:
                   name: fts3-db
                   key: db-name
             - name: WEB_INTERFACE
-              value: usdf-fts3-dev.slac.stanford.edu
+              value: usdf-fts3.slac.stanford.edu
           readinessProbe:
             httpGet:
               path: /whoami
