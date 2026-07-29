@@ -24,7 +24,7 @@ get-secrets:
 #	vault kv get --field=fts3db-connection-string secret/rubin/usdf-fts3/fts3db  > mariadb/etc/secrets/fts3db-connection-string
 	vault kv get --field=fts3db-connection-string-solo secret/rubin/usdf-fts3/fts3db  > mariadb/etc/secrets/fts3db-connection-string
 	mkdir -p activemq/etc/secrets
-	vault kv get --field=config-bp.json secret/rubin/usdf-fts3-dev/activemq  > activemq/etc/secrets/config-bp.json
+	vault kv get --field=config-bp.json secret/rubin/usdf-fts3/activemq  > activemq/etc/secrets/config-bp.json
 	vault kv get --field=fts3db-name secret/rubin/usdf-fts3/fts3db  > mariadb/etc/secrets/fts3db-name
 	vault kv get --field=logging.properties secret/rubin/usdf-fts3/activemq  > activemq/etc/secrets/logging.properties
 	vault kv get --field=login.config secret/rubin/usdf-fts3/activemq  > activemq/etc/secrets/login.config
