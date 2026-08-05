@@ -3,15 +3,17 @@ namespace: fts3
 resources:
   - ns.yaml
   - pvcs.yaml
-  - deployment.yaml
   - service.yaml
   - cronjobs.yaml
   - grid-certificates-job.yaml
+  - fts3server.yaml
+  - fts3mon.yaml
+  - fts3rest.yaml
 
 secretGenerator:
   - name: fts3-configs
     options:
-      disableNameSuffixHash: true
+      disableNameSuffixHash: false
     files:
     - fts3config=etc/fts3config
     - fts3restconfig=etc/fts3restconfig

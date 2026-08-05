@@ -29,6 +29,7 @@ spec:
 
     [mysqld]
     max_user_connections=0
+    max_connections=500
     innodb_buffer_pool_size=4G
 
   resources:
@@ -77,7 +78,7 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 20Gi
+          storage: 200Gi
       storageClassName: wekafs--sdf-k8s01
 
   #env:

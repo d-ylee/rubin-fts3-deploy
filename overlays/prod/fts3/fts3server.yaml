@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fts3-server
+  labels:
+    app: fts3-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fts3-server
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: fts3-server
+    spec:
+      volumes:
+        - name: fts3-configs
+          secret:
+            defaultMode: 420
+            secretName: fts3-configs
+        - name: fts3-host-pems
+          secret:
+            defaultMode: 420
+            secretName: fts3-host-pems
+        - name: grid-certificates
+          persistentVolumeClaim:
+            claimName: grid-certificates-pvc
+        - name: fts3-logs
+          persistentVolumeClaim:
+            claimName: fts3-logs-pvc
+        - name: supervisord-conf
+          configMap:
+            name: supervisord-conf
+      restartPolicy: Always
+      initContainers:
+      - name: prep-log-pvc
+        image: ghcr.io/fnal-fife/fts3-server:3.14.4-s6
+        imagePullPolicy: Always
+        command: ["/bin/sh", "-c", "cp -r /var/log/* /out/"]
+        volumeMounts:
+          - name: fts3-logs
+            mountPath: /out/
+      containers:
+        - name: fts3
+          image: ghcr.io/fnal-fife/fts3-server:3.14.4-s6
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 20Gi
+            requests:
+              cpu: 2000m
+              memory: 20Gi
+          volumeMounts:
+            - name: fts3-configs
+              mountPath: /opt/fts3/fts3-configs
+              readOnly: true
+            - name: fts3-host-pems
+              mountPath: /opt/fts3/fts3-host-pems
+              readOnly: true
+            - name: grid-certificates
+              mountPath: /etc/grid-security/certificates
+              readOnly: true
+            - name: fts3-logs
+              mountPath: /var/log
+            - name: supervisord-conf
+              mountPath: /etc/supervisord.conf
+              subPath: supervisord.conf
+          env:
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fts3-db
+                  key: username
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fts3-db
+                  key: password
+            - name: MARIADB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: fts3-db
+                  key: conn-str
+            - name: FTS3_MARIADB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: fts3-db
+                  key: db-name
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - mysql --host=${MARIADB_CONNECTION_STRING} -P 3306 --user=$MARIADB_USER --password="$MARIADB_PASSWORD" --database=fts3db -e 'SELECT 1'
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
